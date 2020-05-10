@@ -81,20 +81,21 @@ class SistemaExperto:
         for i in range(len(rating)):
             fact(self.Ratings, user_id[i], book_id_rating[i], rating[i])
 
-    #
+
+    #“Un usuario leyó un libro y todo libro tiene un id, entonces el libro que el usuario leyó tiene un id”
     def leyoEstosLibro(self, x, y):
         return conde((self.Ratings(x, self.libro, self.rating_rating), self.Book(self.libro, self.titulo_libro, y)))
 
-    # Igual que el de arriba solo que devolvera el titulo
+
+    #“Un usuario leyó un libro y todo libro tiene un título, entonces el libro que el usuario leyó tiene un título”
     def leyoEstosLibrosTitulo(self, x, y):
         return conde((self.Ratings(x, self.libro, self.rating_rating), self.Book(self.libro, y, self.libro_goodread)))
 
-    def esteLibroTieneEstosTags(self, x, y):
-        return conde((self.Book(self.libro, self.titulo_libro, x), self.BookTags(x, y)))
-
+    #“Un tag esta tiene muchos libros y un libro tiene un título, entonces los libros con un tag tienen un título”
     def estosTagsEstanPresentesEnEstosLibros(self, x, y):
         return conde((self.BookTags(self.libro_goodread, y), self.Book(self.libro, x, self.libro_goodread)))
 
+    #“Si un usuario le gustó leer unos libros y esos libros tiene ciertos tags y esos tags están relacionados a otros libros, entonces esos libros deberían gustarle”
     def recomendar_lista_libros(self, usuarioID):
         resultado_libros_usuario = run(0, self.libro_goodread, self.leyoEstosLibro(usuarioID, self.libro_goodread))
 
@@ -104,7 +105,7 @@ class SistemaExperto:
         resultado_tags_usuario = ()
 
         for x in resultado_libros_usuario:
-            resultado_tags_usuario = resultado_tags_usuario + run(0, self.tag, self.esteLibroTieneEstosTags(x, self.tag))
+            resultado_tags_usuario = resultado_tags_usuario + run(0, self.tag, self.BookTags(x, self.tag))
 
         # eliminacion de duplicados
         lista_tags = list(resultado_tags_usuario)
